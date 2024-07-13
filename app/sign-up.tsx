@@ -6,13 +6,14 @@ import FormInput from "@/components/Inputs/FormInput";
 import { Link } from "expo-router";
 
 const validationSchema = Yup.object({
+  displayName: Yup.string().min(2, "Too Short!").required("Required"),
   email: Yup.string().email("Provide valid email.").required("Required"),
   password: Yup.string()
     .min(6, "Min 6 character required")
     .required("Required"),
 });
 
-export default function SignIn() {
+export default function SignUp() {
   const auth = useAuth();
 
   return (
@@ -24,12 +25,14 @@ export default function SignIn() {
       padding={"$5"}
     >
       <Text marginVertical="$10" fontSize={"$8"}>
-        Log In
+        Create Account
       </Text>
       <Formik
-        initialValues={{ email: "", password: "" }}
+        initialValues={{ displayName: "", email: "", password: "" }}
         validationSchema={validationSchema}
-        onSubmit={(values) => auth.signIn(values.email, values.password)}
+        onSubmit={(values) =>
+          auth.signUp(values.displayName, values.email, values.password)
+        }
       >
         {({
           handleChange,
@@ -42,6 +45,15 @@ export default function SignIn() {
           isValid,
         }) => (
           <>
+            <FormInput
+              name="displayName"
+              placeholder="Name"
+              isInvalid={!!errors.displayName && touched.displayName}
+              onChangeText={handleChange("displayName")}
+              onBlur={handleBlur("displayName")}
+              value={values.displayName}
+              errorMessage={errors.displayName}
+            />
             <FormInput
               name="email"
               placeholder="Email"
@@ -70,14 +82,18 @@ export default function SignIn() {
               onPress={() => handleSubmit()}
               icon={isSubmitting ? () => <Spinner /> : undefined}
             >
-              Log In
+              Sign In
             </Button>
           </>
         )}
       </Formik>
-      <Link href={"/sign-up"}>
-        <Text>Create an account</Text>
-      </Link>
+
+      <Text>
+        Already have an account?{" "}
+        <Link href={"/sign-in"}>
+          <Text color={"$orange10Light"}>Log In</Text>
+        </Link>
+      </Text>
     </View>
   );
 }

@@ -2,12 +2,18 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 
 export const AuthContext = React.createContext<{
-  signIn: () => void;
+  signIn: (email: string | null, password: string | null) => void;
+  signUp: (
+    displayName: string,
+    email: string | null,
+    password: string | null
+  ) => void;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
 }>({
   signIn: () => null,
+  signUp: () => null,
   signOut: () => null,
   session: null,
   isLoading: false,
@@ -19,8 +25,12 @@ export function AuthProvider(props: React.PropsWithChildren) {
   return (
     <AuthContext.Provider
       value={{
-        signIn: () => {
-          setSession("User");
+        signIn: (email, password) => {
+          setSession(email);
+          replace("/(app)");
+        },
+        signUp: (displayName, email, password) => {
+          setSession(email);
           replace("/(app)");
         },
         signOut: () => {
