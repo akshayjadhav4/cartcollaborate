@@ -3,7 +3,7 @@ import { Button, Spinner, Text, View } from "tamagui";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import FormInput from "@/components/Inputs/FormInput";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Provide valid email.").required("Required"),
@@ -14,7 +14,7 @@ const validationSchema = Yup.object({
 
 export default function SignIn() {
   const auth = useAuth();
-
+  const { replace } = useRouter();
   return (
     <View
       flex={1}
@@ -29,7 +29,11 @@ export default function SignIn() {
       <Formik
         initialValues={{ email: "", password: "" }}
         validationSchema={validationSchema}
-        onSubmit={(values) => auth.signIn(values.email, values.password)}
+        onSubmit={(values) =>
+          auth.signIn(values.email, values.password).then(() => {
+            replace("/(app)");
+          })
+        }
       >
         {({
           handleChange,
@@ -66,9 +70,11 @@ export default function SignIn() {
               width={"100%"}
               variant="outlined"
               marginVertical="$10"
-              disabled={isSubmitting || !isValid}
+              disabled={isSubmitting || !isValid || auth.isLoading}
               onPress={() => handleSubmit()}
-              icon={isSubmitting ? () => <Spinner /> : undefined}
+              icon={
+                isSubmitting || auth.isLoading ? () => <Spinner /> : undefined
+              }
             >
               Log In
             </Button>

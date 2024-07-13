@@ -3,7 +3,7 @@ import { Button, Spinner, Text, View } from "tamagui";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import FormInput from "@/components/Inputs/FormInput";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 const validationSchema = Yup.object({
   displayName: Yup.string().min(2, "Too Short!").required("Required"),
@@ -15,6 +15,7 @@ const validationSchema = Yup.object({
 
 export default function SignUp() {
   const auth = useAuth();
+  const { replace } = useRouter();
 
   return (
     <View
@@ -31,7 +32,11 @@ export default function SignUp() {
         initialValues={{ displayName: "", email: "", password: "" }}
         validationSchema={validationSchema}
         onSubmit={(values) =>
-          auth.signUp(values.displayName, values.email, values.password)
+          auth
+            .signUp(values.displayName, values.email, values.password)
+            .then(() => {
+              replace("/(app)");
+            })
         }
       >
         {({
@@ -78,9 +83,11 @@ export default function SignUp() {
               width={"100%"}
               variant="outlined"
               marginVertical="$10"
-              disabled={isSubmitting || !isValid}
+              disabled={isSubmitting || !isValid || auth.isLoading}
               onPress={() => handleSubmit()}
-              icon={isSubmitting ? () => <Spinner /> : undefined}
+              icon={
+                isSubmitting || auth.isLoading ? () => <Spinner /> : undefined
+              }
             >
               Sign In
             </Button>
