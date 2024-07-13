@@ -41,6 +41,9 @@ export function AuthProvider(props: React.PropsWithChildren) {
       reset();
     } else {
       setSession(session);
+      if (!user) {
+        await getUser();
+      }
     }
   }
   async function getUser() {
@@ -55,11 +58,13 @@ export function AuthProvider(props: React.PropsWithChildren) {
     }
   }
   useEffect(() => {
-    setIsLoading(true);
-    if (!session) getSession();
-    if (session && !user) getUser();
-    setIsLoading(false);
-  }, [session, user]);
+    if (!session) {
+      setIsLoading(true);
+      getSession().then(() => {
+        setIsLoading(false);
+      });
+    }
+  }, [session]);
   return (
     <AuthContext.Provider
       value={{
@@ -109,7 +114,8 @@ export function AuthProvider(props: React.PropsWithChildren) {
           }
         },
         signOut: () => {
-          setSession(null);
+          supabase.auth.signOut();
+          reset();
         },
         isLoading,
         session,
