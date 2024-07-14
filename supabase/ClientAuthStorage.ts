@@ -21,13 +21,21 @@ type SupportedStorage = PromisifyMethods<
   isServer?: boolean;
 };
 
-export default class SupabaseClientStorage implements SupportedStorage {
+class SupabaseClientStorage implements SupportedStorage {
+  private static instance: SupabaseClientStorage | null = null;
   private db: Database;
   public isServer?: boolean;
 
-  constructor() {
+  private constructor() {
     this.db = database;
     this.isServer = false;
+  }
+
+  public static getInstance(): SupabaseClientStorage {
+    if (!SupabaseClientStorage.instance) {
+      SupabaseClientStorage.instance = new SupabaseClientStorage();
+    }
+    return SupabaseClientStorage.instance;
   }
 
   getItem(key: string): MaybePromisify<string | null> {
@@ -63,3 +71,7 @@ export default class SupabaseClientStorage implements SupportedStorage {
     } catch (error) {}
   }
 }
+
+const clientAuthStorageInstance = SupabaseClientStorage.getInstance();
+
+export default clientAuthStorageInstance;
