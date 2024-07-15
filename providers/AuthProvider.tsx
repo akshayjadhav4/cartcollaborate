@@ -99,7 +99,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
               password,
               options: {
                 data: {
-                  displayName,
+                  display_name: displayName,
                 },
               },
             });
