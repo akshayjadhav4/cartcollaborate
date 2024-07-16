@@ -17,5 +17,10 @@ export default function AppLayout() {
     return <Redirect href="/sign-in" />;
   }
 
-  return <Stack />;
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(manage-group)" options={{ headerShown: false }} />
+    </Stack>
+  );
 }
