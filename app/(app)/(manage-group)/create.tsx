@@ -3,6 +3,8 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { Button, Spinner, View } from "tamagui";
 import FormInput from "@/components/Inputs/FormInput";
+import useGroup from "@/hooks/storage/useGroups";
+import { useRouter } from "expo-router";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Required"),
@@ -10,12 +12,23 @@ const validationSchema = Yup.object({
 });
 
 const CreateGroupPage = () => {
+  const { replace } = useRouter();
+  const { createGroup } = useGroup();
+
   return (
     <View flex={1} alignItems="center" justifyContent="center" padding={"$5"}>
       <Formik
         initialValues={{ name: "", description: "" }}
         validationSchema={validationSchema}
-        onSubmit={(values) => {}}
+        onSubmit={(values) => {
+          createGroup?.(values)
+            .then(() => {
+              replace("/(app)");
+            })
+            .catch((error) => {
+              console.log("ERROR While Creating Group", error);
+            });
+        }}
       >
         {({
           handleChange,

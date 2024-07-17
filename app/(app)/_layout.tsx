@@ -19,7 +19,7 @@ export default function AppLayout() {
 
   return (
     <Stack>
-      <Stack.Screen name="index" />
+      <Stack.Screen name="index" options={{ title: "Groups" }} />
       <Stack.Screen name="(manage-group)" options={{ headerShown: false }} />
     </Stack>
   );

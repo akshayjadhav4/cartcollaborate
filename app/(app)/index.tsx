@@ -1,21 +1,27 @@
-import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "expo-router";
+import useGroup from "@/hooks/storage/useGroups";
+import { Redirect, useRouter } from "expo-router";
+import { FlatList } from "react-native";
 
-import { Text, View } from "tamagui";
+import { Paragraph, Text, View } from "tamagui";
 
 export default function Index() {
-  const auth = useAuth();
-  const { replace } = useRouter();
+  const {} = useRouter();
+  const { groups } = useGroup();
+
+  if (groups?.length === 0) {
+    return <Redirect href={"/(app)/(manage-group)"} />;
+  }
   return (
-    <View flex={1} alignItems="center" justifyContent="center">
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-      <Text
-        onPress={() => {
-          replace("/(app)/(manage-group)");
-        }}
-      >
-        Sign Out
-      </Text>
+    <View flex={1} p={"$5"}>
+      <FlatList
+        data={groups}
+        renderItem={({ item }) => (
+          <View py={"$5"} borderBottomColor={"$gray1"} borderBottomWidth={"$1"}>
+            <Text fontSize={"$6"}>{item.name}</Text>
+            <Paragraph theme={"alt1"}>{item.description}</Paragraph>
+          </View>
+        )}
+      />
     </View>
   );
 }
