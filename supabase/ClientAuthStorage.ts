@@ -4,6 +4,7 @@ import AuthSession from "../DB/model/AuthSession";
 import * as Crypto from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
 import * as aesjs from "aes-js";
+import { TableName } from "@/DB/schema";
 
 /**
  * AnyFunction, MaybePromisify, SupportedStorage code taken from node_modules/@supabase/auth-js/src/lib/types.ts
@@ -43,7 +44,7 @@ class SupabaseClientStorage implements SupportedStorage {
 
   getItem(key: string): MaybePromisify<string | null> {
     return this.db
-      .get<AuthSession>("auth_session")
+      .get<AuthSession>(TableName.AuthSession)
       .find(key)
       .then(async (result) => {
         const decryptedValue = await this._decrypt(key, result.session);
@@ -56,7 +57,7 @@ class SupabaseClientStorage implements SupportedStorage {
     const encryptedValue = await this._encrypt(key, value);
     await this.db.write(async () => {
       await this.db
-        .get<AuthSession>("auth_session")
+        .get<AuthSession>(TableName.AuthSession)
         .create((record) => {
           record._raw.id = key;
           record.session = encryptedValue;
@@ -67,7 +68,9 @@ class SupabaseClientStorage implements SupportedStorage {
 
   async removeItem(key: string): Promise<void> {
     try {
-      const session = await this.db.get<AuthSession>("auth_session").find(key);
+      const session = await this.db
+        .get<AuthSession>(TableName.AuthSession)
+        .find(key);
       if (session) {
         await this.db.write(async () => {
           await session.destroyPermanently();
