@@ -9,6 +9,7 @@ export default function ManageGroupLayout() {
         options={{
           presentation: "modal",
           title: "Create a New Group",
+          headerBackVisible: true,
         }}
       />
     </Stack>
