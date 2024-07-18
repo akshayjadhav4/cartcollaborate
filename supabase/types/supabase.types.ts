@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      group_members: {
+        Row: {
+          created_at: string | null;
+          group_id: string | null;
+          id: string;
+          joined_at: string | null;
+          role: string;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          group_id?: string | null;
+          id?: string;
+          joined_at?: string | null;
+          role: string;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          group_id?: string | null;
+          id?: string;
+          joined_at?: string | null;
+          role?: string;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "group_members_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       groups: {
         Row: {
           created_at: string;
@@ -23,7 +68,7 @@ export type Database = {
           description: string;
           id?: string;
           name: string;
-          owner_id?: string;
+          owner_id: string;
           updated_at?: string;
         };
         Update: {
@@ -34,7 +79,15 @@ export type Database = {
           owner_id?: string;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "groups_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       profiles: {
         Row: {
