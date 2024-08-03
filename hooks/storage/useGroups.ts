@@ -52,7 +52,20 @@ const useGroup = () => {
       }
     : null;
 
-  return { createGroup, groups };
+  const joinGroup = user
+    ? async ({ code }: { code: string }) => {
+        await database.write(async () => {
+          await database
+            .get<GroupMember>(TableName.GroupMembers)
+            .create((member) => {
+              member.role = GroupRole.Member;
+              member.group_id = code;
+              member.user_id = user.id;
+            });
+        });
+      }
+    : null;
+  return { createGroup, groups, joinGroup };
 };
 
 export default useGroup;

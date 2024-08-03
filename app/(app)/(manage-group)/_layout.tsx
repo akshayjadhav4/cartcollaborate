@@ -12,6 +12,14 @@ export default function ManageGroupLayout() {
           headerBackVisible: true,
         }}
       />
+      <Stack.Screen
+        name="join"
+        options={{
+          presentation: "modal",
+          title: "Join a New Group",
+          headerBackVisible: true,
+        }}
+      />
     </Stack>
   );
 }

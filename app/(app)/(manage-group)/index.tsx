@@ -26,15 +26,17 @@ const OnboardingPage = () => {
               Create a New Group
             </Button>
           </Link>
-          <Button
-            width={"80%"}
-            marginVertical="$5"
-            borderRadius={"$10"}
-            backgroundColor={"$borderColor"}
-            variant="outlined"
-          >
-            Join an Existing Group
-          </Button>
+          <Link href={"/(app)/(manage-group)/join"} asChild>
+            <Button
+              width={"80%"}
+              marginVertical="$5"
+              borderRadius={"$10"}
+              backgroundColor={"$borderColor"}
+              variant="outlined"
+            >
+              Join an Existing Group
+            </Button>
+          </Link>
         </View>
         <Card>
           <Card.Header>

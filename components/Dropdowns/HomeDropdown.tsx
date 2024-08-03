@@ -31,7 +31,12 @@ const HomeDropdown = () => {
           >
             <DropdownMenu.ItemTitle>Create Group</DropdownMenu.ItemTitle>
           </DropdownMenu.Item>
-          <DropdownMenu.Item key="join">
+          <DropdownMenu.Item
+            key="join"
+            onSelect={() => {
+              push("/(manage-group)/join");
+            }}
+          >
             <DropdownMenu.ItemTitle>Join Group</DropdownMenu.ItemTitle>
           </DropdownMenu.Item>
         </DropdownMenu.Group>
