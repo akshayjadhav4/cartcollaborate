@@ -12,27 +12,27 @@ export type Database = {
       group_members: {
         Row: {
           created_at: string | null;
+          deleted_at: string | null;
           group_id: string | null;
           id: string;
-          joined_at: string | null;
           role: string;
           updated_at: string | null;
           user_id: string;
         };
         Insert: {
           created_at?: string | null;
+          deleted_at?: string | null;
           group_id?: string | null;
           id?: string;
-          joined_at?: string | null;
           role: string;
           updated_at?: string | null;
           user_id: string;
         };
         Update: {
           created_at?: string | null;
+          deleted_at?: string | null;
           group_id?: string | null;
           id?: string;
-          joined_at?: string | null;
           role?: string;
           updated_at?: string | null;
           user_id?: string;
@@ -57,6 +57,7 @@ export type Database = {
       groups: {
         Row: {
           created_at: string;
+          deleted_at: string | null;
           description: string;
           id: string;
           name: string;
@@ -65,6 +66,7 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          deleted_at?: string | null;
           description: string;
           id?: string;
           name: string;
@@ -73,6 +75,7 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          deleted_at?: string | null;
           description?: string;
           id?: string;
           name?: string;
@@ -123,7 +126,43 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      epoch_to_timestamp:
+        | {
+            Args: {
+              epoch: number;
+            };
+            Returns: string;
+          }
+        | {
+            Args: {
+              epoch: string;
+            };
+            Returns: string;
+          };
+      pull: {
+        Args: {
+          last_pulled_at?: number;
+        };
+        Returns: Json;
+      };
+      pull_user_data: {
+        Args: {
+          last_pulled_at?: number;
+        };
+        Returns: Json;
+      };
+      push: {
+        Args: {
+          changes: Json;
+        };
+        Returns: undefined;
+      };
+      timestamp_to_epoch: {
+        Args: {
+          ts: string;
+        };
+        Returns: number;
+      };
     };
     Enums: {
       [_ in never]: never;
