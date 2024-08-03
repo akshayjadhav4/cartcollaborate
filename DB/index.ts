@@ -1,5 +1,7 @@
 import { Database } from "@nozbe/watermelondb";
 import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite";
+import { setGenerator } from "@nozbe/watermelondb/utils/common/randomId";
+import * as Crypto from "expo-crypto";
 
 import schema from "./schema";
 import migrations from "./migrations";
@@ -24,3 +26,5 @@ const database = new Database({
 });
 
 export default database;
+
+setGenerator(() => Crypto.randomUUID());
