@@ -10,6 +10,7 @@ import { tamaguiConfig } from "../tamagui.config";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SyncProvider } from "@/providers/SyncProvider";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -18,7 +19,9 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <SafeAreaProvider>
           <AuthProvider>
-            <Slot />
+            <SyncProvider>
+              <Slot />
+            </SyncProvider>
           </AuthProvider>
         </SafeAreaProvider>
       </ThemeProvider>
