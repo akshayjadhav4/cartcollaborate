@@ -12,7 +12,7 @@ const validationSchema = Yup.object({
 });
 
 const JoinGroupPage = () => {
-  const { replace } = useRouter();
+  const { back } = useRouter();
   const { joinGroup } = useGroup();
 
   return (
@@ -38,7 +38,7 @@ const JoinGroupPage = () => {
         onSubmit={(values) => {
           joinGroup?.(values)
             .then(() => {
-              replace("/(app)");
+              back();
             })
             .catch((error) => {
               console.log("ERROR While joining Group", error);

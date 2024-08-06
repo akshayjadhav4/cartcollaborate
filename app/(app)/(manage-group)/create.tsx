@@ -12,7 +12,7 @@ const validationSchema = Yup.object({
 });
 
 const CreateGroupPage = () => {
-  const { replace } = useRouter();
+  const { back } = useRouter();
   const { createGroup } = useGroup();
 
   return (
@@ -23,7 +23,7 @@ const CreateGroupPage = () => {
         onSubmit={(values) => {
           createGroup?.(values)
             .then(() => {
-              replace("/(app)");
+              back();
             })
             .catch((error) => {
               console.log("ERROR While Creating Group", error);
