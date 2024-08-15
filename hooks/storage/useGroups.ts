@@ -6,27 +6,36 @@ import { TableName } from "@/DB/schema";
 import GroupMember, { GroupRole } from "@/DB/model/GroupMember";
 import { Q } from "@nozbe/watermelondb";
 
-const useGroup = () => {
+const useGroup = ({
+  groupID,
+  fetchGroupCollections,
+}: {
+  groupID?: string;
+  fetchGroupCollections?: boolean;
+}) => {
   const { user } = useAuth();
   const [groups, setGroups] = useState<Group[] | null>(null);
+  const [group, setGroup] = useState<Group | null>(null);
 
   useEffect(() => {
-    const subscription = database.collections
-      .get<GroupMember>(TableName.GroupMembers)
-      .query(Q.where("user_id", user?.id ?? null))
-      .observe()
-      .subscribe(async (results) => {
-        const userGroupIds = results.map((result) => result.group_id);
-        const userGroups = await database.collections
-          .get<Group>(TableName.Groups)
-          .query(Q.where("id", Q.oneOf(userGroupIds)))
-          .fetch();
-        setGroups(userGroups);
-      });
+    if (fetchGroupCollections) {
+      const subscription = database.collections
+        .get<GroupMember>(TableName.GroupMembers)
+        .query(Q.where("user_id", user?.id ?? null))
+        .observe()
+        .subscribe(async (results) => {
+          const userGroupIds = results.map((result) => result.group_id);
+          const userGroups = await database.collections
+            .get<Group>(TableName.Groups)
+            .query(Q.where("id", Q.oneOf(userGroupIds)))
+            .fetch();
+          setGroups(userGroups);
+        });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
   }, [user?.id]);
 
   const createGroup = user
@@ -65,7 +74,23 @@ const useGroup = () => {
         });
       }
     : null;
-  return { createGroup, groups, joinGroup };
+
+  useEffect(() => {
+    if (groupID) {
+      const subscription = database.collections
+        .get<Group>(TableName.Groups)
+        .query(Q.where("id", groupID))
+        .observe()
+        .subscribe(async (results) => {
+          setGroup(results?.[0] || null);
+        });
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  }, [groupID]);
+
+  return { createGroup, groups, joinGroup, group };
 };
 
 export default useGroup;
