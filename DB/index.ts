@@ -8,6 +8,8 @@ import migrations from "./migrations";
 import AuthSession from "./model/AuthSession";
 import Group from "./model/Group";
 import GroupMember from "./model/GroupMember";
+import ShoppingList from "./model/ShoppingList";
+import ShoppingListItem from "./model/ShoppingListItem";
 
 const adapter = new SQLiteAdapter({
   schema,
@@ -22,7 +24,13 @@ const adapter = new SQLiteAdapter({
 
 const database = new Database({
   adapter,
-  modelClasses: [AuthSession, Group, GroupMember],
+  modelClasses: [
+    AuthSession,
+    Group,
+    GroupMember,
+    ShoppingList,
+    ShoppingListItem,
+  ],
 });
 
 export default database;

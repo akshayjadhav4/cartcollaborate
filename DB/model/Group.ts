@@ -15,8 +15,8 @@ export default class Group extends Model {
   @text("owner_id") owner_id: string;
   @text("name") name: string;
   @text("description") description: string;
-  @readonly @date("created_at") createdAt!: Date;
-  @readonly @date("updated_at") updatedAt!: Date;
+  @readonly @date("created_at") createdAt: Date;
+  @readonly @date("updated_at") updatedAt: Date;
 
   @children(TableName.GroupMembers) members!: Relation<GroupMember>;
 }
