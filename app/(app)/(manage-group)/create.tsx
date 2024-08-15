@@ -13,7 +13,7 @@ const validationSchema = Yup.object({
 
 const CreateGroupPage = () => {
   const { back } = useRouter();
-  const { createGroup } = useGroup();
+  const { createGroup } = useGroup({});
 
   return (
     <View flex={1} alignItems="center" justifyContent="center" padding={"$5"}>

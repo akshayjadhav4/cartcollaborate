@@ -5,7 +5,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { TamaguiProvider } from "tamagui";
+import { PortalProvider, TamaguiProvider } from "tamagui";
 import { tamaguiConfig } from "../tamagui.config";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -18,11 +18,13 @@ export default function RootLayout() {
     <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <SafeAreaProvider>
-          <AuthProvider>
-            <SyncProvider>
-              <Slot />
-            </SyncProvider>
-          </AuthProvider>
+          <PortalProvider shouldAddRootHost>
+            <AuthProvider>
+              <SyncProvider>
+                <Slot />
+              </SyncProvider>
+            </AuthProvider>
+          </PortalProvider>
         </SafeAreaProvider>
       </ThemeProvider>
     </TamaguiProvider>
