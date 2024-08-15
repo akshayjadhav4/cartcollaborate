@@ -24,6 +24,7 @@
     "@tamagui/lucide-icons": "^1.102.1",
     "@tamagui/metro-plugin": "^1.102.1",
     "aes-js": "^3.1.2",
+    "burnt": "^0.12.2",
     "date-fns": "^3.6.0",
     "expo": "~51.0.20",
     "expo-build-properties": "~0.12.3",
