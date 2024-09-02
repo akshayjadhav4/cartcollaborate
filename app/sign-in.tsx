@@ -4,6 +4,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import FormInput from "@/components/Inputs/FormInput";
 import { Link, useRouter } from "expo-router";
+import useSync from "@/hooks/storage/useSync";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Provide valid email.").required("Required"),
@@ -15,6 +16,7 @@ const validationSchema = Yup.object({
 export default function SignIn() {
   const auth = useAuth();
   const { replace } = useRouter();
+  const { trigger } = useSync();
   return (
     <View
       flex={1}
@@ -31,7 +33,9 @@ export default function SignIn() {
         validationSchema={validationSchema}
         onSubmit={(values) =>
           auth.signIn(values.email, values.password).then(() => {
-            replace("/(app)");
+            trigger(true).then(() => {
+              replace("/(app)");
+            });
           })
         }
       >

@@ -2,6 +2,7 @@ import { supabase } from "@/supabase";
 import React, { useEffect, useState } from "react";
 import { AuthUser, AuthSession } from "@supabase/supabase-js";
 import { Alert } from "react-native";
+import useSync from "@/hooks/storage/useSync";
 
 export const AuthContext = React.createContext<{
   signIn: (email: string | null, password: string | null) => Promise<void>;
@@ -27,6 +28,7 @@ export function AuthProvider(props: React.PropsWithChildren) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { reset: resetLocalDB } = useSync();
   function reset() {
     setSession(null);
     setUser(null);
@@ -114,8 +116,10 @@ export function AuthProvider(props: React.PropsWithChildren) {
           }
         },
         signOut: () => {
-          supabase.auth.signOut();
-          reset();
+          supabase.auth.signOut().then(() => {
+            resetLocalDB();
+            reset();
+          });
         },
         isLoading,
         session,

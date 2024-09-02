@@ -3,12 +3,12 @@ import { supabase } from "@/supabase";
 import database from "@/DB";
 
 const useSync = () => {
-  const trigger = async () => {
+  const trigger = async (forceSync = true) => {
     await synchronize({
       database,
       pullChanges: async ({ lastPulledAt, schemaVersion, migration }) => {
         const { data, error } = await supabase.rpc("pull", {
-          last_pulled_at: lastPulledAt,
+          last_pulled_at: forceSync ? 0 : lastPulledAt,
         });
 
         if (error) {
@@ -32,7 +32,15 @@ const useSync = () => {
     });
   };
 
-  return { trigger };
+  const reset = async () => {
+    await database.write(async () => {
+      // permanently destroys ALL records stored in the database, and sets up empty database
+      await database.unsafeResetDatabase();
+      console.log("[🍉] Reset DB");
+    });
+  };
+
+  return { trigger, reset };
 };
 
 export default useSync;
