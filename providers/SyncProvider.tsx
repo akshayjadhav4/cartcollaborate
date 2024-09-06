@@ -19,8 +19,8 @@ export function SyncProvider(props: React.PropsWithChildren) {
   const { trigger } = useSync();
   async function syncLocalDb() {
     try {
-      setIsSyncing(true);
       if (user?.id && !isSyncing) {
+        setIsSyncing(true);
         await trigger();
       }
       setIsSyncing(false);
