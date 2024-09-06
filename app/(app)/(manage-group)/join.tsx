@@ -6,6 +6,7 @@ import FormInput from "@/components/Inputs/FormInput";
 import useGroup from "@/hooks/storage/useGroups";
 import { useRouter } from "expo-router";
 import ParagraphWithNumber from "@/components/ParagraphWithNumber";
+import * as Burnt from "burnt";
 
 const validationSchema = Yup.object({
   code: Yup.string().required("Required"),
@@ -35,14 +36,19 @@ const JoinGroupPage = () => {
       <Formik
         initialValues={{ code: "" }}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          joinGroup?.(values)
-            .then(() => {
-              back();
-            })
-            .catch((error) => {
-              console.log("ERROR While joining Group", error);
+        onSubmit={async (values) => {
+          try {
+            await joinGroup?.(values);
+            back();
+          } catch (error: any) {
+            Burnt.toast({
+              title: error?.message,
+              preset: "error",
+              haptic: "error",
+              duration: 3,
+              from: "top",
             });
+          }
         }}
       >
         {({

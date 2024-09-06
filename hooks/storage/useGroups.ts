@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { TableName } from "@/DB/schema";
 import GroupMember, { GroupRole } from "@/DB/model/GroupMember";
 import { Q } from "@nozbe/watermelondb";
+import { supabase } from "@/supabase";
+import { Errors } from "@/constants/Errors";
+import useSync from "./useSync";
 
 const useGroup = ({
   groupID,
@@ -14,6 +17,7 @@ const useGroup = ({
   fetchGroupCollections?: boolean;
 }) => {
   const { user } = useAuth();
+  const { trigger } = useSync();
   const [groups, setGroups] = useState<Group[] | null>(null);
   const [group, setGroup] = useState<Group | null>(null);
 
@@ -63,15 +67,21 @@ const useGroup = ({
 
   const joinGroup = user
     ? async ({ code }: { code: string }) => {
-        await database.write(async () => {
-          await database
-            .get<GroupMember>(TableName.GroupMembers)
-            .create((member) => {
-              member.role = GroupRole.Member;
-              member.group_id = code;
-              member.user_id = user.id;
-            });
-        });
+        let { data } = await supabase.from("groups").select("*").eq("id", code);
+
+        if (data?.length === 0 || data?.[0]?.id !== code) {
+          throw new Error(Errors.GROUP_WITH_ID_NOT_FOUND);
+        }
+
+        const { error } = await supabase
+          .from("group_members")
+          .insert([
+            { role: GroupRole.Member, user_id: user?.id, group_id: code },
+          ]);
+        if (error) {
+          throw new Error(Errors.NOT_ABLE_TO_JOIN_GROUP);
+        }
+        await trigger();
       }
     : null;
 
