@@ -7,7 +7,7 @@ const useSync = () => {
     await synchronize({
       database,
       pullChanges: async ({ lastPulledAt, schemaVersion, migration }) => {
-        const { data, error } = await supabase.rpc("pull", {
+        const { data, error } = await supabase.rpc("pullv2", {
           last_pulled_at: forceSync ? 0 : lastPulledAt,
         });
 
@@ -28,7 +28,7 @@ const useSync = () => {
           throw new Error("[🍉] Sync Push Changes ⛔️ ".concat(error.message));
         }
       },
-      sendCreatedAsUpdated: false,
+      sendCreatedAsUpdated: true,
     });
   };
 

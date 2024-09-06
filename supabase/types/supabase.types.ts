@@ -139,7 +139,7 @@ export type Database = {
             };
             Returns: string;
           };
-      pull: {
+      pullv2: {
         Args: {
           last_pulled_at?: number;
         };
