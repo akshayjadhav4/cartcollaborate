@@ -2,10 +2,15 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Card, H4, SizableText, View } from "tamagui";
 import ParagraphWithNumber from "@/components/ParagraphWithNumber";
-import { Link, useRouter } from "expo-router";
+import { Link, Redirect } from "expo-router";
+import useGroup from "@/hooks/storage/useGroups";
 
 const OnboardingPage = () => {
-  const { push } = useRouter();
+  const { groups } = useGroup({ fetchGroupCollections: true });
+
+  if (groups?.length && groups?.length > 0) {
+    return <Redirect href={"/(app)/"} />;
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View flex={1} p="$5">
