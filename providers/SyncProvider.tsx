@@ -47,7 +47,7 @@ export function SyncProvider(props: React.PropsWithChildren) {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [user?.id]);
 
   return isSyncing ? (
     <View
