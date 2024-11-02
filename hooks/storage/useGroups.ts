@@ -100,7 +100,24 @@ const useGroup = ({
     }
   }, [groupID]);
 
-  return { createGroup, groups, joinGroup, group };
+  const getMembers = async (groupId: string) => {
+    if (groupId) {
+      let { data: groupMembers, error } = await supabase
+        .from(TableName.GroupMembers)
+        .select(
+          `id, role, created_at, user_id, profile:profiles(display_name, email)`
+        )
+        .eq("group_id", groupId)
+        .is("deleted_at", null); // Only fetch active members
+      if (error) {
+        throw new Error(Errors.FAILED_TO_LOAD_GROUP_MEMBERS);
+      }
+      return groupMembers;
+    }
+    return null;
+  };
+
+  return { createGroup, groups, joinGroup, group, getMembers };
 };
 
 export default useGroup;

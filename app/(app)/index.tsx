@@ -16,7 +16,12 @@ export default function Index() {
       <FlatList
         data={groups}
         renderItem={({ item }) => (
-          <Link href={`/${item.id}`}>
+          <Link
+            href={{
+              pathname: "/group/[id]",
+              params: { id: item.id },
+            }}
+          >
             <View
               py={"$5"}
               borderBottomColor={"$gray1"}

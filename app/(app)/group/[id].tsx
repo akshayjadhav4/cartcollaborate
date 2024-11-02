@@ -2,13 +2,13 @@ import CreateShoppingList from "@/components/CreateShoppingList";
 import useGroup from "@/hooks/storage/useGroups";
 import useShoppingList from "@/hooks/storage/useShoppingList";
 import { ClipboardList, Plus } from "@tamagui/lucide-icons";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Link, Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { FlatList, Pressable } from "react-native";
 import { H2, H5, Paragraph, Text, View, YStack } from "tamagui";
 import { format } from "date-fns";
 const GroupPage = () => {
-  const { group: groupID } = useLocalSearchParams<{ group: string }>();
+  const { id: groupID } = useLocalSearchParams<{ id: string }>();
   const { group } = useGroup({ groupID });
   const { shoppingLists } = useShoppingList({ groupID });
   const [open, setOpen] = React.useState(false);
@@ -18,7 +18,16 @@ const GroupPage = () => {
       <View flex={1} p="$5">
         <Stack.Screen
           options={{
-            title: group?.name,
+            headerTitle: () => (
+              <Link
+                href={{
+                  pathname: "/group/group-details",
+                  params: { id: group?.id },
+                }}
+              >
+                <Text fontSize={"$5"}>{group?.name}</Text>
+              </Link>
+            ),
             headerBackTitleVisible: false,
             headerRight: () => (
               <Pressable onPress={() => setOpen(true)}>
