@@ -31,7 +31,10 @@ const useGroup = ({
           const userGroupIds = results.map((result) => result.group_id);
           const userGroups = await database.collections
             .get<Group>(TableName.Groups)
-            .query(Q.where("id", Q.oneOf(userGroupIds)))
+            .query(
+              Q.where("id", Q.oneOf(userGroupIds)),
+              Q.sortBy("created_at", Q.desc)
+            )
             .fetch();
           setGroups(userGroups);
         });
