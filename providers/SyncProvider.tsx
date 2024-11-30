@@ -20,7 +20,9 @@ export function SyncProvider(props: React.PropsWithChildren) {
   const { user } = useAuth();
   const { trigger } = useSync();
   const [queuedSync, setQueuedSync] = useState(false);
-  function syncLocalDb() {
+  const [isInitialSync, setisInitialSync] = useState(false);
+
+  function syncLocalDb(isSyncForLoggedInUser = false) {
     try {
       if (isSyncing) {
         setQueuedSync(true); // Queue another sync if one is running
@@ -29,8 +31,10 @@ export function SyncProvider(props: React.PropsWithChildren) {
 
       if (user?.id) {
         setIsSyncing(true);
+        setisInitialSync(isSyncForLoggedInUser);
         trigger().then(() => {
           setIsSyncing(false);
+          setisInitialSync(false);
           if (queuedSync) {
             setQueuedSync(false);
             debounceSync(); // Run the queued sync
@@ -39,6 +43,7 @@ export function SyncProvider(props: React.PropsWithChildren) {
       }
     } catch (error) {
       setIsSyncing(false);
+      setisInitialSync(false);
       console.log("[🍉] ~ syncLocalDb ~ error:", error);
     }
   }
@@ -51,7 +56,7 @@ export function SyncProvider(props: React.PropsWithChildren) {
 
   // sync on Login
   useEffect(() => {
-    syncLocalDb();
+    syncLocalDb(true);
   }, [user?.id]);
 
   // sync between AppState change
@@ -92,7 +97,7 @@ export function SyncProvider(props: React.PropsWithChildren) {
     };
   }, [database, user?.id]);
 
-  return isSyncing ? (
+  return isSyncing && isInitialSync ? (
     <View
       backgroundColor={"$background"}
       flex={1}
