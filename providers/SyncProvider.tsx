@@ -1,8 +1,11 @@
+import database from "@/DB";
+import { TableName } from "@/DB/schema";
 import useSync from "@/hooks/storage/useSync";
 import { useAuth } from "@/hooks/useAuth";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AppState } from "react-native";
-import { Spinner, Text, View } from "tamagui";
+import { Subscription } from "rxjs";
+import { debounce, Spinner, Text, View } from "tamagui";
 
 export const SyncContext = React.createContext<{
   isSyncing: boolean;
@@ -13,41 +16,81 @@ export const SyncContext = React.createContext<{
 });
 
 export function SyncProvider(props: React.PropsWithChildren) {
-  const appState = useRef(AppState.currentState);
   const [isSyncing, setIsSyncing] = useState(false);
   const { user } = useAuth();
   const { trigger } = useSync();
-  async function syncLocalDb() {
+  const [queuedSync, setQueuedSync] = useState(false);
+  function syncLocalDb() {
     try {
-      if (user?.id && !isSyncing) {
-        setIsSyncing(true);
-        await trigger();
+      if (isSyncing) {
+        setQueuedSync(true); // Queue another sync if one is running
+        return;
       }
-      setIsSyncing(false);
+
+      if (user?.id) {
+        setIsSyncing(true);
+        trigger().then(() => {
+          setIsSyncing(false);
+          if (queuedSync) {
+            setQueuedSync(false);
+            debounceSync(); // Run the queued sync
+          }
+        });
+      }
     } catch (error) {
       setIsSyncing(false);
       console.log("[🍉] ~ syncLocalDb ~ error:", error);
     }
   }
+
+  /**
+   * Getting warning on multiple change due to multiple sync calls.
+   * Diagnostic error: [Sync] Concurrent synchronization is not allowed.
+   */
+  const debounceSync = debounce(syncLocalDb, 10);
+
+  // sync on Login
   useEffect(() => {
     syncLocalDb();
+  }, [user?.id]);
+
+  // sync between AppState change
+  useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
-      ) {
-        syncLocalDb();
-      } else if (nextAppState.match(/inactive|background/)) {
-        syncLocalDb();
-      }
-
-      appState.current = nextAppState;
+      console.log("[📲] ~ subscription ~ nextAppState:", nextAppState);
+      syncLocalDb();
     });
-
     return () => {
       subscription.remove();
     };
-  }, [user?.id]);
+  }, []);
+
+  useEffect(() => {
+    let subscription: Subscription;
+    if (user?.id) {
+      subscription = database
+        .withChangesForTables([
+          TableName.Groups,
+          TableName.GroupMembers,
+          TableName.ShoppingList,
+        ])
+        .subscribe({
+          next(value) {
+            const nonSyncedChanges = value?.filter(
+              (v) => v.record.syncStatus !== "synced" // 'synced' | 'created' | 'updated' | 'deleted' | 'disposable'
+            );
+
+            // if local changes then sync
+            if (!!nonSyncedChanges?.length) {
+              debounceSync();
+            }
+          },
+        });
+    }
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [database, user?.id]);
 
   return isSyncing ? (
     <View

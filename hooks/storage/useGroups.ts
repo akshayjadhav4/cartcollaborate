@@ -81,7 +81,6 @@ const useGroup = ({
         if (error) {
           throw new Error(Errors.NOT_ABLE_TO_JOIN_GROUP);
         }
-        await trigger();
       }
     : null;
 

@@ -33,9 +33,7 @@ export default function SignIn() {
         validationSchema={validationSchema}
         onSubmit={(values) =>
           auth.signIn(values.email, values.password).then(() => {
-            trigger(true).then(() => {
-              replace("/(app)");
-            });
+            replace("/(app)");
           })
         }
       >
