@@ -23,28 +23,28 @@ export function SyncProvider(props: React.PropsWithChildren) {
   const [isInitialSync, setisInitialSync] = useState(false);
 
   function syncLocalDb(isSyncForLoggedInUser = false) {
-    try {
-      if (isSyncing) {
-        setQueuedSync(true); // Queue another sync if one is running
-        return;
-      }
+    if (isSyncing) {
+      setQueuedSync(true); // Queue another sync if one is running
+      return;
+    }
 
-      if (user?.id) {
-        setIsSyncing(true);
-        setisInitialSync(isSyncForLoggedInUser);
-        trigger().then(() => {
+    if (user?.id) {
+      setIsSyncing(true);
+      setisInitialSync(isSyncForLoggedInUser);
+      trigger()
+        .then(() => {
           setIsSyncing(false);
           setisInitialSync(false);
           if (queuedSync) {
             setQueuedSync(false);
             debounceSync(); // Run the queued sync
           }
+        })
+        .catch((error) => {
+          setIsSyncing(false);
+          setisInitialSync(false);
+          console.log("[🍉] ~ syncLocalDb ~ error:", error);
         });
-      }
-    } catch (error) {
-      setIsSyncing(false);
-      setisInitialSync(false);
-      console.log("[🍉] ~ syncLocalDb ~ error:", error);
     }
   }
 
