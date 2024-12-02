@@ -25,7 +25,10 @@ const useGroup = ({
     if (fetchGroupCollections) {
       const subscription = database.collections
         .get<Group>(TableName.Groups)
-        .query(Q.where("_status", Q.notEq("deleted"))) // prevent fetching records marked as deleted till sync complete
+        .query(
+          Q.where("_status", Q.notEq("deleted")),
+          Q.on("group_members", Q.where("_status", Q.notEq("deleted")))
+        ) // prevent fetching records marked as deleted till sync complete
         .observe()
         .subscribe((results) => {
           setGroups(results);
