@@ -139,7 +139,7 @@ export type Database = {
             };
             Returns: string;
           };
-      pullv2: {
+      pullsync: {
         Args: {
           last_pulled_at?: number;
         };
@@ -151,7 +151,7 @@ export type Database = {
         };
         Returns: Json;
       };
-      push: {
+      pushsync: {
         Args: {
           changes: Json;
         };
