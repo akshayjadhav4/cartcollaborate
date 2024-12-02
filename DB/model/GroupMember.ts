@@ -9,7 +9,7 @@ import {
 import Group from "./Group";
 
 export enum GroupRole {
-  Owner = "owner",
+  Owner = "Owner",
   Member = "Member",
 }
 

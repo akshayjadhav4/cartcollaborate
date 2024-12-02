@@ -24,19 +24,11 @@ const useGroup = ({
   useEffect(() => {
     if (fetchGroupCollections) {
       const subscription = database.collections
-        .get<GroupMember>(TableName.GroupMembers)
-        .query(Q.where("user_id", user?.id ?? null))
+        .get<Group>(TableName.Groups)
+        .query(Q.where("_status", Q.notEq("deleted"))) // prevent fetching records marked as deleted till sync complete
         .observe()
-        .subscribe(async (results) => {
-          const userGroupIds = results.map((result) => result.group_id);
-          const userGroups = await database.collections
-            .get<Group>(TableName.Groups)
-            .query(
-              Q.where("id", Q.oneOf(userGroupIds)),
-              Q.sortBy("created_at", Q.desc)
-            )
-            .fetch();
-          setGroups(userGroups);
+        .subscribe((results) => {
+          setGroups(results);
         });
 
       return () => {
@@ -84,6 +76,7 @@ const useGroup = ({
         if (error) {
           throw new Error(Errors.NOT_ABLE_TO_JOIN_GROUP);
         }
+        await trigger();
       }
     : null;
 
@@ -119,7 +112,39 @@ const useGroup = ({
     return null;
   };
 
-  return { createGroup, groups, joinGroup, group, getMembers };
+  const deleteGroup = async (groupID?: string) => {
+    if (groupID) {
+      await database.write(async () => {
+        const group = await database.collections
+          .get<Group>(TableName.Groups)
+          .find(groupID);
+        await group.markAsDeleted();
+      });
+    }
+  };
+
+  const leaveGroup = async (groupID?: string, userId?: string) => {
+    if (groupID && userId) {
+      await database.write(async () => {
+        const member = await database.collections
+          .get<GroupMember>(TableName.GroupMembers)
+          .query(Q.where("group_id", groupID), Q.where("user_id", userId));
+        if (member[0]?.id) {
+          await member[0]?.markAsDeleted();
+        }
+      });
+    }
+  };
+
+  return {
+    createGroup,
+    groups,
+    joinGroup,
+    group,
+    getMembers,
+    deleteGroup,
+    leaveGroup,
+  };
 };
 
 export default useGroup;
