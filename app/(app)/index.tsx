@@ -9,7 +9,7 @@ export default function Index() {
   const { groups } = useGroup({ fetchGroupCollections: true });
 
   if (groups?.length === 0) {
-    return <Redirect href={"/(app)/(manage-group)"} />;
+    return <Redirect href={"/(app)/manage-group"} />;
   }
   return (
     <View flex={1} p={"$5"}>

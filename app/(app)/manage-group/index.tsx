@@ -20,7 +20,7 @@ const OnboardingPage = () => {
           Get started by creating a new group or joining an existing one.
         </SizableText>
         <View width={"100%"} alignItems="center" justifyContent="center">
-          <Link href={"/(app)/(manage-group)/create"} asChild>
+          <Link href={"/(app)/manage-group/create"} asChild>
             <Button
               width={"80%"}
               marginVertical="$5"
@@ -31,7 +31,7 @@ const OnboardingPage = () => {
               Create a New Group
             </Button>
           </Link>
-          <Link href={"/(app)/(manage-group)/join"} asChild>
+          <Link href={"/(app)/manage-group/join"} asChild>
             <Button
               width={"80%"}
               marginVertical="$5"

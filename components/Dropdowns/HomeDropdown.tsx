@@ -26,7 +26,7 @@ const HomeDropdown = () => {
           <DropdownMenu.Item
             key="create"
             onSelect={() => {
-              push("/(manage-group)/create");
+              push("/manage-group/create");
             }}
           >
             <DropdownMenu.ItemTitle>Create Group</DropdownMenu.ItemTitle>
@@ -34,7 +34,7 @@ const HomeDropdown = () => {
           <DropdownMenu.Item
             key="join"
             onSelect={() => {
-              push("/(manage-group)/join");
+              push("/manage-group/join");
             }}
           >
             <DropdownMenu.ItemTitle>Join Group</DropdownMenu.ItemTitle>

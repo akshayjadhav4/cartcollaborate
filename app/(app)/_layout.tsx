@@ -27,7 +27,7 @@ export default function AppLayout() {
           headerRight: () => <HomeDropdown />,
         }}
       />
-      <Stack.Screen name="(manage-group)" options={{ headerShown: false }} />
+      <Stack.Screen name="manage-group" options={{ headerShown: false }} />
     </Stack>
   );
 }
