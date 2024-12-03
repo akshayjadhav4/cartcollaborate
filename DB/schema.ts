@@ -44,6 +44,7 @@ export default appSchema({
         { name: "description", type: "string" },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
+        { name: "due_date_at", type: "number", isOptional: true },
       ],
     }),
     tableSchema({

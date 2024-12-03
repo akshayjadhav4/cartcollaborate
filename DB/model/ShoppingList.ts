@@ -16,6 +16,7 @@ export default class ShoppingList extends Model {
   @text("user_id") user_id: string;
   @text("name") name: string;
   @text("description") description: string;
+  @date("due_date_at") dueDate: Date;
   @readonly @date("created_at") createdAt: Date;
   @readonly @date("updated_at") updatedAt: Date;
 

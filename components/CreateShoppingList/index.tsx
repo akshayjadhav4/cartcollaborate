@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import BottomSheet from "../BottomSheet";
 import { H1, Spinner, View } from "tamagui";
 import { Formik } from "formik";
@@ -8,10 +8,15 @@ import { Button } from "tamagui";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useShoppingList from "@/hooks/storage/useShoppingList";
 import * as Burnt from "burnt";
+import DatePicker from "react-native-date-picker";
+import { TouchableOpacity } from "react-native";
+import { Text } from "tamagui";
+import { format } from "date-fns";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Required"),
   description: Yup.string(),
+  dueDate: Yup.date().nullable(),
 });
 
 type Props = {
@@ -23,7 +28,7 @@ type Props = {
 const CreateShoppingList = ({ groupID, open, setOpen }: Props) => {
   const { top } = useSafeAreaInsets();
   const { create } = useShoppingList({});
-
+  const [openDateTimePicker, setOpenDateTimePicker] = useState(false);
   return (
     <BottomSheet open={open} setOpen={setOpen}>
       <View flex={1}>
@@ -31,7 +36,7 @@ const CreateShoppingList = ({ groupID, open, setOpen }: Props) => {
           Create New Shopping List
         </H1>
         <Formik
-          initialValues={{ name: "", description: "" }}
+          initialValues={{ name: "", description: "", dueDate: null }}
           validationSchema={validationSchema}
           onSubmit={async (values, { resetForm }) => {
             try {
@@ -45,6 +50,7 @@ const CreateShoppingList = ({ groupID, open, setOpen }: Props) => {
                 shouldDismissByDrag: true,
               });
             } catch (error) {
+              console.log("🚀 ~ onSubmit={ ~ error:", error);
               Burnt.toast({
                 title:
                   "Oops! Couldn't create the shopping list. Please try again.",
@@ -69,6 +75,7 @@ const CreateShoppingList = ({ groupID, open, setOpen }: Props) => {
             isSubmitting,
             isValid,
             resetForm,
+            setFieldValue,
           }) => (
             <>
               <FormInput
@@ -88,6 +95,43 @@ const CreateShoppingList = ({ groupID, open, setOpen }: Props) => {
                 onBlur={handleBlur("description")}
                 value={values.description}
                 errorMessage={errors.description}
+              />
+              <TouchableOpacity onPress={() => setOpenDateTimePicker(true)}>
+                <Text
+                  mb="$5"
+                  color={"$orange10Dark"}
+                  fontSize={"$5"}
+                  fontWeight={"bold"}
+                >
+                  Add a deadline to stay on track.
+                </Text>
+              </TouchableOpacity>
+              {values.dueDate ? (
+                <FormInput
+                  name="dueDate"
+                  placeholder="Deadline"
+                  isInvalid={false}
+                  value={format(values.dueDate, "do MMM y, h:mm a")}
+                  errorMessage=""
+                  editable={false}
+                />
+              ) : null}
+              <DatePicker
+                minimumDate={new Date()}
+                date={values.dueDate || new Date()}
+                open={openDateTimePicker}
+                onDateChange={(date) => {
+                  setFieldValue("dueDate", date);
+                }}
+                modal
+                onCancel={() => {
+                  setFieldValue("dueDate", null);
+                  setOpenDateTimePicker(false);
+                }}
+                onConfirm={(date) => {
+                  setFieldValue("dueDate", date);
+                  setOpenDateTimePicker(false);
+                }}
               />
               <Button
                 width={"100%"}

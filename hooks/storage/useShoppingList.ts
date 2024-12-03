@@ -23,10 +23,33 @@ const useShoppingList = ({
     if (groupID) {
       const subscription = database.collections
         .get<ShoppingList>(TableName.ShoppingList)
-        .query(Q.where("group_id", groupID), Q.sortBy("created_at", Q.desc))
+        .query(Q.where("group_id", groupID))
         .observe()
         .subscribe((results) => {
-          setShoppingLists(results);
+          // TODO: refactor with alternate approach
+          const sortedRecords = results.sort((a, b) => {
+            // First check `due_date_at` and sort by that (earliest first)
+            const aDueDate = a.dueDate;
+            const bDueDate = b.dueDate;
+            // If both have due dates, sort by due date
+            if (aDueDate && bDueDate) {
+              return aDueDate < bDueDate ? -1 : aDueDate > bDueDate ? 1 : 0;
+            }
+            // If only one has a due date put it first
+            if (aDueDate && !bDueDate) {
+              return -1;
+            }
+            if (bDueDate && !aDueDate) {
+              return 1;
+            }
+            // If neither has a due date sort by creation date
+            return a.createdAt < b.createdAt
+              ? -1
+              : a.createdAt > b.createdAt
+              ? 1
+              : 0;
+          });
+          setShoppingLists(sortedRecords);
         });
 
       return () => {
@@ -55,10 +78,12 @@ const useShoppingList = ({
         groupID,
         name,
         description,
+        dueDate,
       }: {
         groupID: string;
         name: string;
         description?: string;
+        dueDate: Date | null;
       }) => {
         await database.write(async () => {
           await database
@@ -68,6 +93,9 @@ const useShoppingList = ({
               shoppingList.description = description || "";
               (shoppingList.user_id = user?.id),
                 (shoppingList.group_id = groupID);
+              if (dueDate) {
+                shoppingList.dueDate = dueDate;
+              }
             });
         });
       }
