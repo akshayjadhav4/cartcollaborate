@@ -1,12 +1,12 @@
 import CreateShoppingList from "@/components/CreateShoppingList";
 import useGroup from "@/hooks/storage/useGroups";
 import useShoppingList from "@/hooks/storage/useShoppingList";
+import getDueDateMessage from "@/utils";
 import { ClipboardList, Plus } from "@tamagui/lucide-icons";
 import { Link, Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { FlatList, Pressable } from "react-native";
 import { H2, H5, Paragraph, Text, View, YStack } from "tamagui";
-import { format } from "date-fns";
 const GroupPage = () => {
   const { id: groupID } = useLocalSearchParams<{ id: string }>();
   const { group } = useGroup({ groupID });
@@ -52,7 +52,7 @@ const GroupPage = () => {
                     <Paragraph theme={"alt1"}>{item.description}</Paragraph>
                   ) : null}
                   <Paragraph theme={"dark_alt1"}>
-                    {format(item?.createdAt, "do MMM y, h:mm a")}
+                    {getDueDateMessage(item.dueDate, item?.createdAt)}
                   </Paragraph>
                 </View>
               )}
