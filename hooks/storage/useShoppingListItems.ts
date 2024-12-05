@@ -20,7 +20,8 @@ const useShoppingListItems = ({ listId }: { listId?: string }) => {
           Q.sortBy("is_purchased", Q.asc),
           Q.sortBy("priority", Q.desc)
         )
-        .observe() //TODO:: observe sometimes not reactive on is_purchased update
+        .observeWithColumns(["is_purchased", "_status", "priority"])
+        // .observe() //TODO:: observe sometimes not reactive on is_purchased update
         .subscribe((results) => {
           setShoppingItems(results);
         });
