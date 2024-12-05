@@ -42,19 +42,21 @@ const GroupPage = () => {
             <FlatList
               data={shoppingLists}
               renderItem={({ item }) => (
-                <View
-                  py={"$3"}
-                  borderBottomColor={"$gray1"}
-                  borderBottomWidth={"$1"}
-                >
-                  <Text fontSize={"$6"}>{item.name}</Text>
-                  {item.description ? (
-                    <Paragraph theme={"alt1"}>{item.description}</Paragraph>
-                  ) : null}
-                  <Paragraph theme={"dark_alt1"}>
-                    {getDueDateMessage(item.dueDate, item?.createdAt)}
-                  </Paragraph>
-                </View>
+                <Link href={`/shopping/${item.id}`}>
+                  <View
+                    py={"$3"}
+                    borderBottomColor={"$gray1"}
+                    borderBottomWidth={"$1"}
+                  >
+                    <Text fontSize={"$6"}>{item.name}</Text>
+                    {item.description ? (
+                      <Paragraph theme={"alt1"}>{item.description}</Paragraph>
+                    ) : null}
+                    <Paragraph theme={"dark_alt1"}>
+                      {getDueDateMessage(item.dueDate, item?.createdAt)}
+                    </Paragraph>
+                  </View>
+                </Link>
               )}
             />
           </>

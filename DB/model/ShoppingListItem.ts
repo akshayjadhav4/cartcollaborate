@@ -1,5 +1,12 @@
 import { Model } from "@nozbe/watermelondb";
-import { date, readonly, relation, text } from "@nozbe/watermelondb/decorators";
+import {
+  date,
+  field,
+  readonly,
+  relation,
+  text,
+  writer,
+} from "@nozbe/watermelondb/decorators";
 import { TableName } from "../schema";
 import ShoppingList from "./ShoppingList";
 
@@ -23,13 +30,24 @@ export default class ShoppingListItem extends Model {
   @text("name") name: string;
   @text("category") category: string;
   @text("note") note: string;
-  @text("priority") priority: string;
-  @text("quantity") quantity: number;
-  @text("is_purchased") purchased: boolean;
+  @field("priority") priority: number;
+  @field("quantity") quantity: number;
+  @field("is_purchased") purchased: boolean;
+  @text("unit") unit: string;
 
   @readonly @date("created_at") createdAt: Date;
   @readonly @date("updated_at") updatedAt: Date;
 
   @relation(TableName.ShoppingList, "shopping_list_id")
   shopping_list: ShoppingList;
+
+  @writer async togglePurchased(isPurchased: boolean) {
+    await this.update((listItem) => {
+      listItem.purchased = isPurchased;
+    });
+  }
+
+  @writer async removeItem() {
+    await this.markAsDeleted();
+  }
 }
