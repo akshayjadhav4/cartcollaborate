@@ -78,6 +78,7 @@ export function SyncProvider(props: React.PropsWithChildren) {
           TableName.Groups,
           TableName.GroupMembers,
           TableName.ShoppingList,
+          TableName.ShoppingListItem,
         ])
         .subscribe({
           next(value) {
