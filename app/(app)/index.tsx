@@ -33,7 +33,7 @@ export default function Index() {
             <Card p="$3" borderRadius={"$4"}>
               <XStack alignItems="center">
                 <YStack flex={1}>
-                  <Text fontSize={"$6"}>{item.name}</Text>
+                  <Text fontWeight="bold">{item.name}</Text>
                   <Paragraph theme={"alt1"}>{item.description}</Paragraph>
                 </YStack>
                 <Link href={`/group/${item.id}`}>
