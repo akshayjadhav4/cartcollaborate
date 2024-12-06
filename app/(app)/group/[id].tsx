@@ -1,16 +1,18 @@
 import CreateShoppingList from "@/components/CreateShoppingList";
+import SwipeableListItem from "@/components/SwipeableListItem";
 import useGroup from "@/hooks/storage/useGroups";
 import useShoppingList from "@/hooks/storage/useShoppingList";
 import getDueDateMessage from "@/utils";
-import { ClipboardList, Plus } from "@tamagui/lucide-icons";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
+import { ClipboardList, Plus, Trash } from "@tamagui/lucide-icons";
 import { Link, Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { FlatList, Pressable } from "react-native";
-import { H2, H5, Paragraph, Text, View, YStack } from "tamagui";
+import { Card, H2, H5, Paragraph, Text, View, XStack, YStack } from "tamagui";
 const GroupPage = () => {
   const { id: groupID } = useLocalSearchParams<{ id: string }>();
   const { group } = useGroup({ groupID });
-  const { shoppingLists } = useShoppingList({ groupID });
+  const { shoppingLists, deleteList } = useShoppingList({ groupID });
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -42,21 +44,40 @@ const GroupPage = () => {
             <FlatList
               data={shoppingLists}
               renderItem={({ item }) => (
-                <Link href={`/shopping/${item.id}`}>
-                  <View
-                    py={"$3"}
-                    borderBottomColor={"$gray1"}
-                    borderBottomWidth={"$1"}
-                  >
-                    <Text fontSize={"$6"}>{item.name}</Text>
-                    {item.description ? (
-                      <Paragraph theme={"alt1"}>{item.description}</Paragraph>
-                    ) : null}
-                    <Paragraph theme={"dark_alt1"}>
-                      {getDueDateMessage(item.dueDate, item?.createdAt)}
-                    </Paragraph>
-                  </View>
-                </Link>
+                <SwipeableListItem
+                  rightActions={[
+                    {
+                      icon: <Trash />,
+                      bgColor: "$red10",
+                      onPress: () => {
+                        deleteList(item.id);
+                      },
+                    },
+                  ]}
+                >
+                  <Card p="$3" borderRadius={"$4"}>
+                    <XStack alignItems="center">
+                      <YStack flex={1}>
+                        <Text fontWeight="bold">{item.name}</Text>
+                        {item.description ? (
+                          <Paragraph theme={"alt1"}>
+                            {item.description}
+                          </Paragraph>
+                        ) : null}
+                        <Paragraph theme={"dark_alt1"}>
+                          {getDueDateMessage(item.dueDate, item?.createdAt)}
+                        </Paragraph>
+                      </YStack>
+                      <Link href={`/shopping/${item.id}`}>
+                        <EvilIcons
+                          name="chevron-right"
+                          size={40}
+                          color={"grey"}
+                        />
+                      </Link>
+                    </XStack>
+                  </Card>
+                </SwipeableListItem>
               )}
             />
           </>

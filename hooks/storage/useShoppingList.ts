@@ -100,7 +100,11 @@ const useShoppingList = ({
         });
       }
     : null;
-  return { create, shoppingLists, shoppingListDetails };
+
+  const deleteList = async (listId: string) => {
+    //
+  };
+  return { create, shoppingLists, shoppingListDetails, deleteList };
 };
 
 export default useShoppingList;
