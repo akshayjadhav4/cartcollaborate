@@ -1,6 +1,6 @@
 import FormInput from "@/components/Inputs/FormInput";
 import { useRouter, Stack, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -26,10 +26,41 @@ import useShoppingListItems from "@/hooks/storage/useShoppingListItems";
 import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { Check } from "@tamagui/lucide-icons";
 
-const AddItem = () => {
-  const { listId } = useLocalSearchParams<{ listId: string }>();
-  const { addItem } = useShoppingListItems({});
+const ManageItem = () => {
+  const { listId, itemId } = useLocalSearchParams<{
+    listId?: string;
+    itemId?: string;
+  }>();
+  const { addItem, getShoppingListItem, updateItem } = useShoppingListItems({});
   const router = useRouter();
+  const [initialValues, setInitialValues] = useState({
+    name: "",
+    category: "",
+    note: "",
+    priority: PRIORITY_LEVELS.Low,
+    quantity: 1,
+    unit: "",
+    purchased: false,
+  });
+
+  useEffect(() => {
+    if (itemId && !initialValues.name) {
+      getShoppingListItem(itemId).then((item) => {
+        if (item.id) {
+          setInitialValues({
+            name: item?.name,
+            category: item?.category,
+            note: item?.note,
+            priority: item?.priority,
+            quantity: item?.quantity,
+            unit: item?.unit,
+            purchased: item?.purchased,
+          });
+        }
+      });
+    }
+  }, []);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -37,21 +68,14 @@ const AddItem = () => {
     >
       <Stack.Screen
         options={{
-          title: "Add Item",
+          title: itemId ? "Edit Item" : "Add Item",
           headerBackTitleVisible: false,
         }}
       />
       <Formik
-        initialValues={{
-          name: "",
-          category: "",
-          note: "",
-          priority: PRIORITY_LEVELS.Low,
-          quantity: 1,
-          unit: "",
-          purchased: false,
-        }}
+        initialValues={initialValues}
         validationSchema={itemValidationSchema}
+        enableReinitialize
         onSubmit={async (values, { resetForm }) => {
           try {
             if (listId) {
@@ -65,10 +89,23 @@ const AddItem = () => {
                 shouldDismissByDrag: true,
               });
               router.back();
+            } else if (itemId) {
+              await updateItem({ itemId, ...values });
+              Burnt.toast({
+                title: "Successfully saved changes.",
+                preset: "done",
+                haptic: "success",
+                duration: 2,
+                from: "top",
+                shouldDismissByDrag: true,
+              });
+              router.back();
             }
           } catch (error) {
             Burnt.toast({
-              title: "Couldn't add the item to shopping list",
+              title: `Couldn't ${
+                itemId ? "save" : "add"
+              } the item to shopping list`,
               preset: "error",
               haptic: "error",
               duration: 2,
@@ -129,7 +166,8 @@ const AddItem = () => {
                 value={values.unit}
                 setValue={handleChange("unit")}
                 items={CATEGORY_UNITS[
-                  values.category as keyof typeof CATEGORY_UNITS
+                  (values.category ||
+                    initialValues.category) as keyof typeof CATEGORY_UNITS
                 ]?.map((unit) => ({
                   value: unit,
                   label: unit.charAt(0).toUpperCase() + unit.slice(1),
@@ -196,7 +234,7 @@ const AddItem = () => {
                 onPress={() => handleSubmit()}
                 icon={isSubmitting ? () => <Spinner /> : undefined}
               >
-                Add
+                {itemId ? "Save" : "Add"}
               </Button>
             </View>
           </>
@@ -206,4 +244,4 @@ const AddItem = () => {
   );
 };
 
-export default AddItem;
+export default ManageItem;

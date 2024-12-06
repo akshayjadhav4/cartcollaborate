@@ -21,7 +21,7 @@ const ShoppingItems = () => {
           headerRight: () => (
             <Link
               href={{
-                pathname: `/shopping/add`,
+                pathname: `/shopping/manage-item`,
                 params: {
                   listId: shoppingListDetails?.id,
                 },

@@ -1,5 +1,7 @@
 import { getPriorityLabel, getSelectorColor } from "@/constants/ShopItem";
 import { Check, Trash } from "@tamagui/lucide-icons";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
+import { Link } from "expo-router";
 import React from "react";
 import { Dimensions } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -136,6 +138,16 @@ const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
               />
               <Text color={"$gray10"}>{getPriorityLabel(priority)}</Text>
             </YStack>
+            <Link
+              href={{
+                pathname: `/shopping/manage-item`,
+                params: {
+                  itemId: id,
+                },
+              }}
+            >
+              <EvilIcons name="chevron-right" size={24} color={"grey"} />
+            </Link>
           </XStack>
         </AnimatedCard>
       </GestureDetector>

@@ -69,7 +69,46 @@ const useShoppingListItems = ({ listId }: { listId?: string }) => {
       }
     : null;
 
-  return { addItem, shoppingItems };
+  const getShoppingListItem = async (itemId: string) => {
+    return await database
+      .get<ShoppingListItem>(TableName.ShoppingListItem)
+      .find(itemId);
+  };
+
+  const updateItem = async ({
+    itemId,
+    category,
+    name,
+    note,
+    priority,
+    purchased,
+    quantity,
+    unit,
+  }: {
+    itemId: string;
+    name: string;
+    category: string;
+    note: string;
+    priority: number;
+    purchased: boolean;
+    quantity: number;
+    unit: string;
+  }) => {
+    await database.write(async () => {
+      const savedItem = await getShoppingListItem(itemId);
+      await savedItem.update((shoppingListItem) => {
+        shoppingListItem.name = name;
+        shoppingListItem.category = category;
+        shoppingListItem.note = note;
+        shoppingListItem.priority = Number(priority);
+        shoppingListItem.purchased = purchased;
+        shoppingListItem.quantity = Number(quantity);
+        shoppingListItem.unit = unit;
+      });
+    });
+  };
+
+  return { addItem, shoppingItems, getShoppingListItem, updateItem };
 };
 
 export default useShoppingListItems;
