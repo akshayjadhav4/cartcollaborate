@@ -1,4 +1,4 @@
-import { Model } from "@nozbe/watermelondb";
+import { Model, Relation } from "@nozbe/watermelondb";
 import {
   date,
   field,
@@ -9,12 +9,6 @@ import {
 } from "@nozbe/watermelondb/decorators";
 import { TableName } from "../schema";
 import ShoppingList from "./ShoppingList";
-
-export enum Priority {
-  Optional = "optional",
-  Recommended = "recommended",
-  Essential = "essential",
-}
 
 export default class ShoppingListItem extends Model {
   static table = TableName.ShoppingListItem;
@@ -39,7 +33,7 @@ export default class ShoppingListItem extends Model {
   @readonly @date("updated_at") updatedAt: Date;
 
   @relation(TableName.ShoppingList, "shopping_list_id")
-  shopping_list: ShoppingList;
+  shoppingList: Relation<ShoppingList>;
 
   @writer async togglePurchased(isPurchased: boolean) {
     await this.update((listItem) => {

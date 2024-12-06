@@ -102,7 +102,14 @@ const useShoppingList = ({
     : null;
 
   const deleteList = async (listId: string) => {
-    //
+    if (listId) {
+      await database.write(async () => {
+        const list = await database.collections
+          .get<ShoppingList>(TableName.ShoppingList)
+          .find(listId);
+        await list.markAsDeleted();
+      });
+    }
   };
   return { create, shoppingLists, shoppingListDetails, deleteList };
 };

@@ -3,7 +3,6 @@ import {
   getSelectorColor,
   PRIORITY_LEVELS,
 } from "@/constants/ShopItem";
-import { Priority } from "@/DB/model/ShoppingListItem";
 import React, { ChangeEvent } from "react";
 import { TouchableOpacity } from "react-native";
 import { Circle, Label, Text, View, XStack } from "tamagui";
