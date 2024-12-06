@@ -7,7 +7,8 @@ import EvilIcons from "@expo/vector-icons/EvilIcons";
 import { ClipboardList, Plus, Trash } from "@tamagui/lucide-icons";
 import { Link, Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { FlatList, Pressable } from "react-native";
+import { Pressable } from "react-native";
+import Animated, { LinearTransition } from "react-native-reanimated";
 import { Card, H2, H5, Paragraph, Text, View, XStack, YStack } from "tamagui";
 const GroupPage = () => {
   const { id: groupID } = useLocalSearchParams<{ id: string }>();
@@ -41,7 +42,7 @@ const GroupPage = () => {
         {shoppingLists && shoppingLists?.length > 0 ? (
           <>
             <H2 mb="$2">Shopping Lists</H2>
-            <FlatList
+            <Animated.FlatList
               data={shoppingLists}
               renderItem={({ item }) => (
                 <SwipeableListItem
@@ -79,6 +80,7 @@ const GroupPage = () => {
                   </Card>
                 </SwipeableListItem>
               )}
+              itemLayoutAnimation={LinearTransition}
             />
           </>
         ) : (
