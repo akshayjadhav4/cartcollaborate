@@ -1,10 +1,10 @@
 import ShoppingListItemCard from "@/components/ShoppingListItem";
 import useShoppingList from "@/hooks/storage/useShoppingList";
 import useShoppingListItems from "@/hooks/storage/useShoppingListItems";
-import { Plus } from "@tamagui/lucide-icons";
+import { Plus, ShoppingCart } from "@tamagui/lucide-icons";
 import { Link, Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { H2, View } from "tamagui";
+import { H2, H5, Text, View, YStack } from "tamagui";
 import Animated, { LinearTransition } from "react-native-reanimated";
 
 const ShoppingItems = () => {
@@ -59,7 +59,14 @@ const ShoppingItems = () => {
           />
         </>
       ) : (
-        <></>
+        <YStack flex={1} alignItems="center" justifyContent="center">
+          <ShoppingCart size={"$6"} my={"$5"} />
+          <H5 mb={"$5"}>No Items</H5>
+          <Text textAlign="center">
+            It looks like this shopping list doesn't have any items yet. Tap the
+            '+' button to add your first item.
+          </Text>
+        </YStack>
       )}
     </View>
   );
