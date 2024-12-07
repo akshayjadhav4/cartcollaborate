@@ -1,50 +1,103 @@
-# Welcome to your Expo app 👋
+# Shopping List Collaboration App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Shopping List Collaboration App** enables users to create groups, manage shopping lists, and collaborate in real-time with other group members. Built as an **offline-first application**, it ensures that changes happen locally and are synced with the remote database on intervels. Real-time collaboration is specifically implemented for shopping list items, providing an efficient and seamless experience.
 
-## Get started
+## Features
 
-1. Install dependencies
+### User Authentication
+- Secure user authentication via Supabase.
+- Users can register and log in using email and password.
 
-   ```bash
-   npm install
-   ```
+### Groups
+- Users can create groups and invite other members.
+- Members can join a group using an invite code.
+- Groups facilitate collaborative shopping list management.
 
-2. Start the app
+### Shopping Lists
+- Users can create shopping lists within groups.
+- Shopping lists include:
+  - Item name
+  - Quantity
+  - Unit (e.g., kg, pcs)
+  - Category
+  - Priority level
+  - Notes
+  - Purchased status
 
-   ```bash
-    npx expo start
-   ```
+### Collaboration
+- Real-time updates for shopping list items when members add, edit, or delete items.
+- Supabase Realtime broadcasting is used.
 
-In the output, you'll find options to open the app in a
+### Notifications
+- Toast notifications for successful actions and errors.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Offline Support
+- Local database storage for offline access.
+- Sync functionality ensures local changes are reconciled with remote data.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Technical Overview
 
-## Get a fresh project
+### Tech Stack
+- **Frontend**: React Native with Expo
+- **Routing**: Expo Router
+- **UI**: Tamagui (UI components and styles), Zeego (Native styles menus), Formik (form handling)
+- **Animation**: react-native-gesture-handler, react-native-reanimated
+- **Backend**: Supabase (authentication, database, real-time subscriptions)
+- **Database**: PostgreSQL (Supabase)
 
-When you're ready, run:
+### Key Functionalities
 
-```bash
-npm run reset-project
-```
+#### Offline-First Architecture
+- The app prioritizes offline functionality by storing data locally.
+- Users can make changes to shopping list items even without an internet connection.
+- Synchronization ensures that local changes are updated on the remote database when the app regains connectivity.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+#### Real-Time Collaboration
+The app uses Supabase Realtime subscriptions exclusively for shopping list items:
+- Broadcasts are sent when a user makes changes to a shopping list.
+- All users in the group receive updates and see changes immediately.
 
-## Learn more
+#### Group Membership
+- Groups are the core unit of collaboration.
+- Each group maintains its own set of shopping lists.
+- Membership is managed through the `group_members` table.
 
-To learn more about developing your project with Expo, look at the following resources:
+### Database Schema
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+#### Tables
+1. **Users**: Contains user information.
+2. **Groups**: Stores group details.
+3. **Group Members**: Links users to groups.
+4. **Shopping Lists**: Stores shopping list details.
+5. **Shopping List Items**: Stores individual items in a shopping list.
 
-## Join the community
 
-Join our community of developers creating universal apps.
+# Screenshots
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+  <img src="demo/01.png" alt="Screenshot 1" width="200">
+  <img src="demo/02.png" alt="Screenshot 2" width="200">
+  <img src="demo/03.png" alt="Screenshot 3" width="200">
+  <img src="demo/04.png" alt="Screenshot 4" width="200">
+  <img src="demo/05.png" alt="Screenshot 5" width="200">
+  <img src="demo/06.png" alt="Screenshot 6" width="200">
+  <img src="demo/07.png" alt="Screenshot 7" width="200">
+  <img src="demo/08.png" alt="Screenshot 8" width="200">
+  <img src="demo/09.png" alt="Screenshot 9" width="200">
+  <img src="demo/10.png" alt="Screenshot 10" width="200">
+  <img src="demo/11.png" alt="Screenshot 11" width="200">
+  <img src="demo/12.png" alt="Screenshot 12" width="200">
+  <img src="demo/13.png" alt="Screenshot 13" width="200">
+  <img src="demo/14.png" alt="Screenshot 14" width="200">
+  <img src="demo/15.png" alt="Screenshot 15" width="200">
+  <img src="demo/16.png" alt="Screenshot 16" width="200">
+  <img src="demo/17.png" alt="Screenshot 17" width="200">
+  <img src="demo/18.png" alt="Screenshot 18" width="200">
+</div>
+
+
+## References
+
+[Watermelondb Docs](https://watermelondb.dev/docs/Sync/Intro)
+[Syncing the local DB with Supabase](https://supabase.com/blog/react-native-offline-first-watermelon-db)
