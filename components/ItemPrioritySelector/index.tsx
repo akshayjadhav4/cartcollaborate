@@ -40,12 +40,10 @@ const ItemPrioritySelector = ({
                 backgroundColor={
                   priority === value ? getSelectorColor(priority) : "$gray1"
                 }
-                elevation="$4"
               >
                 <Circle
                   size={30}
                   backgroundColor={`${getSelectorColor(priority)}`}
-                  elevation="$4"
                 />
               </Circle>
             </TouchableOpacity>
