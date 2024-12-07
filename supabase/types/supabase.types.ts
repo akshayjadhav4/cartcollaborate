@@ -7,6 +7,31 @@ export type Json =
   | Json[];
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+          extensions?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       group_members: {
@@ -111,12 +136,118 @@ export type Database = {
           id?: string;
           updated_at?: string | null;
         };
+        Relationships: [];
+      };
+      shopping_list: {
+        Row: {
+          created_at: string;
+          deleted_at: string | null;
+          description: string | null;
+          due_date_at: string | null;
+          group_id: string | null;
+          id: string;
+          name: string | null;
+          updated_at: string | null;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          deleted_at?: string | null;
+          description?: string | null;
+          due_date_at?: string | null;
+          group_id?: string | null;
+          id?: string;
+          name?: string | null;
+          updated_at?: string | null;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          deleted_at?: string | null;
+          description?: string | null;
+          due_date_at?: string | null;
+          group_id?: string | null;
+          id?: string;
+          name?: string | null;
+          updated_at?: string | null;
+          user_id?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "profiles_id_fkey";
-            columns: ["id"];
-            isOneToOne: true;
-            referencedRelation: "users";
+            foreignKeyName: "shopping_list_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "shopping_list_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      shopping_list_item: {
+        Row: {
+          category: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          is_purchased: boolean | null;
+          name: string | null;
+          note: string | null;
+          priority: number | null;
+          quantity: number | null;
+          shopping_list_id: string | null;
+          unit: string | null;
+          updated_at: string | null;
+          user_id: string | null;
+        };
+        Insert: {
+          category?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          is_purchased?: boolean | null;
+          name?: string | null;
+          note?: string | null;
+          priority?: number | null;
+          quantity?: number | null;
+          shopping_list_id?: string | null;
+          unit?: string | null;
+          updated_at?: string | null;
+          user_id?: string | null;
+        };
+        Update: {
+          category?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          is_purchased?: boolean | null;
+          name?: string | null;
+          note?: string | null;
+          priority?: number | null;
+          quantity?: number | null;
+          shopping_list_id?: string | null;
+          unit?: string | null;
+          updated_at?: string | null;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "shopping_list_item_shopping_list_id_fkey";
+            columns: ["shopping_list_id"];
+            isOneToOne: false;
+            referencedRelation: "shopping_list";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "shopping_list_item_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           }
         ];
@@ -139,7 +270,7 @@ export type Database = {
             };
             Returns: string;
           };
-      pullsync: {
+      pull: {
         Args: {
           last_pulled_at?: number;
         };
@@ -150,6 +281,24 @@ export type Database = {
           last_pulled_at?: number;
         };
         Returns: Json;
+      };
+      pullsync: {
+        Args: {
+          last_pulled_at?: number;
+        };
+        Returns: Json;
+      };
+      pullv2: {
+        Args: {
+          last_pulled_at?: number;
+        };
+        Returns: Json;
+      };
+      push: {
+        Args: {
+          changes: Json;
+        };
+        Returns: undefined;
       };
       pushsync: {
         Args: {
@@ -253,4 +402,19 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
   ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+  : never;
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database;
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+  ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
   : never;
