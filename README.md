@@ -99,5 +99,5 @@ The app uses Supabase Realtime subscriptions exclusively for shopping list items
 
 ## References
 
-[Watermelondb Docs](https://watermelondb.dev/docs/Sync/Intro)
-[Syncing the local DB with Supabase](https://supabase.com/blog/react-native-offline-first-watermelon-db)
+- [Watermelondb Docs](https://watermelondb.dev/docs/Sync/Intro)
+- [Syncing the local DB with Supabase](https://supabase.com/blog/react-native-offline-first-watermelon-db)
