@@ -2,6 +2,9 @@ import database from "@/DB";
 import { TableName } from "@/DB/schema";
 import useSync from "@/hooks/storage/useSync";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/supabase";
+import { RealtimeChannel } from "@supabase/supabase-js";
+import { usePathname } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { AppState } from "react-native";
 import { Subscription } from "rxjs";
@@ -21,6 +24,31 @@ export function SyncProvider(props: React.PropsWithChildren) {
   const { trigger } = useSync();
   const [queuedSync, setQueuedSync] = useState(false);
   const [isInitialSync, setisInitialSync] = useState(false);
+  const pathname = usePathname();
+  const [channel, setChannel] = useState<RealtimeChannel | null>();
+  useEffect(() => {
+    // Listen to sync event broadcast for shopping list items screen and sync changes
+    if (pathname.split("/")[1] === "shopping" && !channel?.topic) {
+      const channel = supabase.channel(`sync-${pathname.split("/")[2]}`, {
+        config: { broadcast: { self: false } },
+      });
+      console.log("🚀 Created Channel", channel.topic);
+      const subscription = channel
+        ?.on("broadcast", { event: "sync" }, (payload) => {
+          debounceSync();
+        })
+        .subscribe();
+      console.log("🚀 Subscribed to Channel", channel.topic);
+      setChannel(channel);
+      return () => {
+        if (subscription) {
+          console.log("🚀 Unsubscribed from Channel", channel.topic);
+          subscription?.unsubscribe();
+          setChannel(null);
+        }
+      };
+    }
+  }, [pathname]);
 
   function syncLocalDb(isSyncForLoggedInUser = false) {
     if (isSyncing) {
@@ -39,6 +67,21 @@ export function SyncProvider(props: React.PropsWithChildren) {
             setQueuedSync(false);
             debounceSync(); // Run the queued sync
           }
+          console.log("🚀 ~ .then ~ channel:", channel?.topic);
+          if (channel) {
+            channel
+              ?.send({
+                type: "broadcast",
+                event: "sync",
+                payload: { message: "Sync List Items" },
+              })
+              .then((value) => {
+                console.log("🚀 Send broadcast", value);
+              })
+              .catch((error) => {
+                console.log("🚀 Failed to send broadcast", error);
+              });
+          }
         })
         .catch((error) => {
           setIsSyncing(false);
@@ -52,7 +95,7 @@ export function SyncProvider(props: React.PropsWithChildren) {
    * Getting warning on multiple change due to multiple sync calls.
    * Diagnostic error: [Sync] Concurrent synchronization is not allowed.
    */
-  const debounceSync = debounce(syncLocalDb, 10);
+  const debounceSync = debounce(syncLocalDb, 900);
 
   // sync on Login
   useEffect(() => {
